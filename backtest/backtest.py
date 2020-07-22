@@ -1,4 +1,4 @@
-from __future__ import (absolute_import, division, print_function, unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import backtrader as bt
 from datetime import datetime
@@ -6,6 +6,7 @@ from datetime import datetime
 from utils import get_data_path, consts, pairs
 from feeds.kraken_csv_feed import KrakenCSVData
 from strategies.test_strategy import TestStrategy
+
 
 def test_backtrader():
     cerebro = bt.Cerebro()
@@ -22,7 +23,7 @@ def test_backtrader():
         dataname=datapath,
         fromdate=datetime(2018, 1, 1),
         timeframe=bt.TimeFrame.Minutes,
-        compression=1    
+        compression=1,
     )
 
     # plain add
@@ -44,7 +45,7 @@ def test_backtrader():
 
     print(f"Ending portfolio val: {cerebro.broker.getvalue():.2f}")
 
-    cerebro.plot(style='bar')
+    cerebro.plot(style="bar")
 
 
 if __name__ == "__main__":

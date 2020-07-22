@@ -4,10 +4,12 @@ import math
 import logging
 from enum import Enum
 
+
 def get_data_path(filename):
     """ get_data_path takes a filename and turns it into an absolute path in the data folder """
-    data_directory = str(pathlib.Path(__file__).parent.parent.absolute()) + '/data/'
+    data_directory = str(pathlib.Path(__file__).parent.parent.absolute()) + "/data/"
     return data_directory + filename
+
 
 def seek_interval_start(seconds, timeframe):
     """ 
@@ -16,7 +18,7 @@ def seek_interval_start(seconds, timeframe):
     """
     try:
         t = datetime.utcfromtimestamp(seconds)
-        logging.debug(f'seek interval input: {t}')
+        logging.debug(f"seek interval input: {t}")
     except Exception as e:
         logging.error(e)
         return
@@ -24,7 +26,7 @@ def seek_interval_start(seconds, timeframe):
     seconds = math.ceil(seconds)
     discard = seconds % timeframe.to_seconds()
     seconds = seconds - discard + timeframe.to_seconds()
-    logging.debug(f'output: {datetime.utcfromtimestamp(seconds)}')
+    logging.debug(f"output: {datetime.utcfromtimestamp(seconds)}")
     return float(seconds)
 
 
@@ -40,6 +42,7 @@ class Timeframe(Enum):
     D1
     D10
     """
+
     M1 = 1
     M5 = 2
     M30 = 3
@@ -62,6 +65,6 @@ class Timeframe(Enum):
             Timeframe.H1: 3600,
             Timeframe.H5: 18000,
             Timeframe.D1: 86400,
-            Timeframe.D10: 864000
+            Timeframe.D10: 864000,
         }
         return switcher[self]

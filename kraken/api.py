@@ -34,11 +34,13 @@ import base64
 
 from . import version
 
-RATE_LIMIT_EXCEEDED = ['EAPI:Rate limit exceeded']
+RATE_LIMIT_EXCEEDED = ["EAPI:Rate limit exceeded"]
 API_RATE_DECREMENT_TIMER = 3
+
 
 class RateLimitError(Exception):
     pass
+
 
 class API(object):
     """ Maintains a single session between this machine and Kraken.
@@ -57,7 +59,8 @@ class API(object):
        No query rate limiting is performed.
 
     """
-    def __init__(self, key='', secret=''):
+
+    def __init__(self, key="", secret=""):
         """ Create an object with authentication information.
 
         :param key: (optional) key identifier for queries to the API
@@ -69,12 +72,18 @@ class API(object):
         """
         self.key = key
         self.secret = secret
-        self.uri = 'https://api.kraken.com'
-        self.apiversion = '0'
+        self.uri = "https://api.kraken.com"
+        self.apiversion = "0"
         self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'krakenex/' + version.__version__ + ' (+' + version.__url__ + ')'
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": "krakenex/"
+                + version.__version__
+                + " (+"
+                + version.__url__
+                + ")"
+            }
+        )
         self.response = None
         self._json_options = {}
         self._call_counter = 0
@@ -83,12 +92,7 @@ class API(object):
         return
 
     def _increment_counter(self, method):
-        m = {
-            'Ledgers': 2,
-            'TradesHistory': 2,
-            'AddOrder': 0,
-            'CancelOrder': 0
-        }
+        m = {"Ledgers": 2, "TradesHistory": 2, "AddOrder": 0, "CancelOrder": 0}
         count = 1
         if method in m:
             count = m[method]
@@ -98,7 +102,9 @@ class API(object):
         self._call_counter -= 1
         if self._call_counter < 0:
             self._call_counter = 0
-        self._dtimer = threading.Timer(API_RATE_DECREMENT_TIMER, self._decrement_counter)
+        self._dtimer = threading.Timer(
+            API_RATE_DECREMENT_TIMER, self._decrement_counter
+        )
         self._dtimer.daemon = True
         self._dtimer.start()
 
@@ -134,7 +140,7 @@ class API(object):
         :returns: None
 
         """
-        with open(path, 'r') as f:
+        with open(path, "r") as f:
             self.key = f.readline().strip()
             self.secret = f.readline().strip()
         return
@@ -167,21 +173,21 @@ class API(object):
 
         url = self.uri + urlpath
 
-        self.response = self.session.post(url, data = data, headers = headers,
-                                          timeout = timeout)
+        self.response = self.session.post(
+            url, data=data, headers=headers, timeout=timeout
+        )
 
         if self.response.status_code not in (200, 201, 202):
             self.response.raise_for_status()
 
-        error = self.response.json()['error']
+        error = self.response.json()["error"]
         if error:
             if error == RATE_LIMIT_EXCEEDED:
                 raise RateLimitError(error)
             else:
                 raise RuntimeError(error)
 
-        return self.response.json(**self._json_options)['result']
-
+        return self.response.json(**self._json_options)["result"]
 
     def query_public(self, method, data=None, timeout=None):
         """ Performs an API query that does not require a valid key/secret pair.
@@ -200,10 +206,10 @@ class API(object):
         if data is None:
             data = {}
 
-        urlpath = '/' + self.apiversion + '/public/' + method
+        urlpath = "/" + self.apiversion + "/public/" + method
 
         self._increment_counter(method)
-        return self._query(urlpath, data, timeout = timeout)
+        return self._query(urlpath, data, timeout=timeout)
 
     def query_private(self, method, data=None, timeout=None):
         """ Performs an API query that requires a valid key/secret pair.
@@ -223,19 +229,16 @@ class API(object):
             data = {}
 
         if not self.key or not self.secret:
-            raise Exception('Either key or secret is not set! (Use `load_key()`.')
+            raise Exception("Either key or secret is not set! (Use `load_key()`.")
 
-        data['nonce'] = self._nonce()
+        data["nonce"] = self._nonce()
 
-        urlpath = '/' + self.apiversion + '/private/' + method
+        urlpath = "/" + self.apiversion + "/private/" + method
 
-        headers = {
-            'API-Key': self.key,
-            'API-Sign': self._sign(data, urlpath)
-        }
+        headers = {"API-Key": self.key, "API-Sign": self._sign(data, urlpath)}
 
         self._increment_counter(method)
-        return self._query(urlpath, data, headers, timeout = timeout)
+        return self._query(urlpath, data, headers, timeout=timeout)
 
     def _nonce(self):
         """ Nonce counter.
@@ -243,7 +246,7 @@ class API(object):
         :returns: an always-increasing unsigned integer (up to 64 bits wide)
 
         """
-        return int(1000*time.time())
+        return int(1000 * time.time())
 
     def _sign(self, data, urlpath):
         """ Sign request data according to Kraken's scheme.
@@ -257,11 +260,10 @@ class API(object):
         postdata = urllib.parse.urlencode(data)
 
         # Unicode-objects must be encoded before hashing
-        encoded = (str(data['nonce']) + postdata).encode()
+        encoded = (str(data["nonce"]) + postdata).encode()
         message = urlpath.encode() + hashlib.sha256(encoded).digest()
 
-        signature = hmac.new(base64.b64decode(self.secret),
-                             message, hashlib.sha512)
+        signature = hmac.new(base64.b64decode(self.secret), message, hashlib.sha512)
         sigdigest = base64.b64encode(signature.digest())
 
         return sigdigest.decode()
@@ -269,16 +271,22 @@ class API(object):
     def get_orderbook(self, pair):
         while self.at_api_limit():
             pass
-        
+
         try:
-            r = self.query_public('Depth', data={
-                'pair': pair
-            })
+            r = self.query_public("Depth", data={"pair": pair})
         except RateLimitError:
             logging.warning("Rate limit hit...")
             return None
 
-        logging.info('Order books as of time %s for pair %s', str(datetime.datetime.now()), pair)
-        logging.info('Bid mean: %f', statistics.mean([float(item[0]) for item in r[pair]['bids']]))
-        logging.info('Ask mean: %f', statistics.mean([float(item[0]) for item in r[pair]['asks']]))
+        logging.info(
+            "Order books as of time %s for pair %s", str(datetime.datetime.now()), pair
+        )
+        logging.info(
+            "Bid mean: %f",
+            statistics.mean([float(item[0]) for item in r[pair]["bids"]]),
+        )
+        logging.info(
+            "Ask mean: %f",
+            statistics.mean([float(item[0]) for item in r[pair]["asks"]]),
+        )
         return r[pair]

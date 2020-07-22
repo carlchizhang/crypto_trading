@@ -39,4 +39,5 @@ to the top-level namespace, so the following uses are possible:
 # "public interface"
 from .api import API
 from .api import RateLimitError
-__all__ = ['API', 'RateLimitError']
+
+__all__ = ["API", "RateLimitError"]

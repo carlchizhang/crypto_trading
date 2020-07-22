@@ -13,16 +13,17 @@ import dao
 logging.basicConfig(level=logging.INFO)
 PAIR_SLEEP_INTERVAL = 3
 
+
 def process_raw_orderbook(pair, res):
     snapshot_epoch = time.time()
     logging.info("Processing raw orderbook for snapshot_epoch %d", snapshot_epoch)
     columns = []
-    for ask in res['asks']:
+    for ask in res["asks"]:
         price = float(ask[0])
         volume = float(ask[1])
         order_epoch = ask[2]
         columns.append([pair, price, volume, True, order_epoch, snapshot_epoch])
-    for bid in res['bids']:
+    for bid in res["bids"]:
         price = float(bid[0])
         volume = float(bid[1])
         order_epoch = bid[2]
