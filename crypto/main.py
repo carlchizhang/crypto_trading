@@ -4,8 +4,8 @@ import backtrader as bt
 from datetime import datetime
 
 from utils import get_data_path, consts, pairs
-from feeds.kraken_csv_feed import KrakenCSVData
-from strategies.test_strategy import TestStrategy
+from backtest.feeds.kraken_csv_feed import KrakenCSVData
+from backtest.strategies.test_strategy import TestStrategy
 
 
 def test_backtrader():

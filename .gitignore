@@ -147,3 +147,6 @@ static
 
 # db files
 *.db
+
+# vscode config
+.vscode/

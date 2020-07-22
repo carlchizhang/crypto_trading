@@ -4,10 +4,10 @@ import time
 import csv
 import pathlib
 
-from utils import get_data_path
-from utils import consts
-from utils import pairs
-import kraken
+from crypto.utils import get_data_path
+from crypto.utils import consts
+from crypto.utils import pairs
+import crypto.kraken as kraken
 
 FILE_END_SEEK_OFFSET = -1024
 
