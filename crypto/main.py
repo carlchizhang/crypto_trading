@@ -1,11 +1,13 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-import backtrader as bt
 from datetime import datetime
 
-from utils import get_data_path, consts, pairs
+import backtrader as bt
+
 from backtest.feeds.kraken_csv_feed import KrakenCSVData
 from backtest.strategies.test_strategy import TestStrategy
+from utils import consts, get_data_path, pairs
 
 
 def test_backtrader():

@@ -1,5 +1,6 @@
 import backtrader as bt
 
+
 # Create a Stratey
 class TestStrategy(bt.Strategy):
     params = (

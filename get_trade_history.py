@@ -48,9 +48,9 @@ def get_all_trades(pair=pairs.PAIR_XBT_USD, append=True):
             )
 
         last = get_last_trade_index(csv_file_path)
-        logging.info("Getting all trades for %s as of time %s", pair, last)
+        logging.info(f"Getting all trades for {pair} as of time {last}")
 
-        logging.info("starting retrieval from timestamp %s", last)
+        logging.info(f"starting retrieval from timestamp {last}")
         count = 0
         while True:
             if c.at_api_limit():

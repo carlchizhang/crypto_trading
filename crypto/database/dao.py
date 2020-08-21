@@ -1,5 +1,4 @@
 import sqlite3
-import logging
 
 from .consts import DB_NAME
 from utils import get_data_path
@@ -14,7 +13,10 @@ class DAO(object):
     def bulk_insert_raw_orderbook(self, columns):
         cursor = self._conn.cursor()
         cursor.executemany(
-            "INSERT INTO raw_orderbook (pair, price, volume, is_ask, order_epoch, snapshot_epoch) VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                "INSERT INTO raw_orderbook (pair,"
+                " price, volume, is_ask, order_epoch, snapshot_epoch) VALUES (?, ?, ?, ?, ?, ?)"
+            ),
             columns,
         )
         self._conn.commit()

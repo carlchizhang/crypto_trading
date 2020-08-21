@@ -12,9 +12,9 @@ def get_data_path(filename):
 
 
 def seek_interval_start(seconds, timeframe):
-    """ 
-    seek_interval_start takes in a unix epoch timestamp 
-    and returns the closest aligned timeframe after the timestamp 
+    """
+    seek_interval_start takes in a unix epoch timestamp
+    and returns the closest aligned timeframe after the timestamp
     """
     try:
         t = datetime.utcfromtimestamp(seconds)

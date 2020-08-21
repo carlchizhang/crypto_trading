@@ -1,3 +1,7 @@
+"""
+Database related functions
+"""
+
 from .dao import DAO
 from .consts import DB_NAME
 
